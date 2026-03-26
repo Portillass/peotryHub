@@ -1,6 +1,6 @@
 const dotenv = require('dotenv');
 const path = require('path');
-const app = require('../server/src/app');
+const app = require('../server/src/index');
 const { connectMongo } = require('../server/src/db');
 
 dotenv.config({ path: path.join(__dirname, '..', 'server', '.env') });
