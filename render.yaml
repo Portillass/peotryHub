@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: open-poetry-library
+    env: node
+    rootDir: .
+    buildCommand: npm install --prefix client && npm install --prefix server && npm run build --prefix client
+    startCommand: npm start --prefix server
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGO_URI
+        sync: false
+      - key: MONGO_URI_DIRECT
+        sync: false

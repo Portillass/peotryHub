@@ -4,6 +4,28 @@ import HomePage from './pages/HomePage';
 import SubmitPage from './pages/SubmitPage';
 import { addComment, getPoems, likePoem, submitPoem } from './services/poemApi';
 
+function getApiErrorMessage(error, fallbackMessage) {
+  const status = error?.response?.status;
+  const backendMessage =
+    error?.response?.data?.message ||
+    error?.response?.data?.error ||
+    error?.response?.data?.details;
+
+  if (status && backendMessage) {
+    return `${fallbackMessage} (${status}: ${backendMessage})`;
+  }
+
+  if (status) {
+    return `${fallbackMessage} (status ${status})`;
+  }
+
+  if (error?.message) {
+    return `${fallbackMessage} (${error.message})`;
+  }
+
+  return fallbackMessage;
+}
+
 function App() {
   const [activePage, setActivePage] = useState('home');
   const [selectedTopic, setSelectedTopic] = useState('All');
@@ -25,7 +47,7 @@ function App() {
       const data = await getPoems(topic);
       setPoems(data);
     } catch (requestError) {
-      setError('Could not load poems. Please try again.');
+      setError(getApiErrorMessage(requestError, 'Could not load poems. Please try again.'));
     } finally {
       setLoading(false);
     }
@@ -47,7 +69,7 @@ function App() {
         )
       );
     } catch (requestError) {
-      setError('Could not like this poem right now.');
+      setError(getApiErrorMessage(requestError, 'Could not like this poem right now.'));
     } finally {
       setLikingPoemId('');
     }
@@ -66,7 +88,9 @@ function App() {
 
       return true;
     } catch (requestError) {
-      setCommentError('Could not add comment right now.');
+      setCommentError(
+        getApiErrorMessage(requestError, 'Could not add comment right now.')
+      );
       return false;
     } finally {
       setCommentingPoemId('');
@@ -95,7 +119,12 @@ function App() {
 
       return true;
     } catch (requestError) {
-      setSubmitError('Could not submit poem. Check your input and try again.');
+      setSubmitError(
+        getApiErrorMessage(
+          requestError,
+          'Could not submit poem. Check your input and try again.'
+        )
+      );
       return false;
     } finally {
       setSubmitting(false);
